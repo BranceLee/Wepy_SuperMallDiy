@@ -1,0 +1,128 @@
+<template>
+  <view>
+    <view class="swiper-container">
+      <swiper
+        class="swiper"
+        indicator-active-color="{{indicatorActiveColor}}"
+        indicator-dots="{{indicatorDots}}"
+        autoplay="{{autoplay}}"
+        interval="{{interval}}"
+        duration="{{duration}}"
+        circular="true"
+      >
+        <block wx:for="{{adList}}" wx:key="key">
+          <swiper-item>
+            <image src="{{item.picUrl}}" class="slide-image" @tap="goToAdvert({{item.advertUrl}})">
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+    <view class="activity-btn-area">
+      <navigator class="activity-li-btn" open-type="navigate" url="/pages/signIn">
+        <image class="activity-bg" src="../images/icon_nav_01_new.png">
+        <text>签到有礼</text>
+      </navigator>
+      <navigator class="activity-li-btn" open-type="navigate" url="/page/exchageGoods">
+        <image class="activity-bg" src="../images/icon_nav_02_new.png">
+        <text>换货专区</text>
+      </navigator>
+      <navigator class="activity-li-btn" open-type="navigate" url="/page/wholeSale">
+        <image class="activity-bg" src="../images/icon_nav_03_new.png">
+        <text>特价专区</text>
+      </navigator>
+      <navigator class="activity-li-btn" open-type="navigate" url="/pages/purchaseGoods">
+        <image class="activity-bg" src="../images/icon_nav_04_new.png">
+        <text>我要补货</text>
+      </navigator>
+    </view>
+    <view>
+      <discover :list.sync="discoverList"></discover>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import api from '@/service/api';
+import Discover from '@/components/discover';
+export default class Home extends wepy.page {
+  config = {
+    navigationBarTitle: '商城'
+  };
+  components = {
+    discover: Discover
+  };
+  data = {
+    indicatorActiveColor: '#fff',
+    indicatorDots: true,
+    autoplay: true,
+    interval: 3000,
+    duration: 1000,
+    adList: [],
+    discoverList: []
+  };
+  onLoad() {
+    this.getAdList();
+    this.getDiscoverList();
+  }
+  async getAdList() {
+    const res = await api.getAdList();
+    if (res.data.code == 0) {
+      const { data } = res;
+      this.adList = data.list;
+      this.$apply();
+    }
+  }
+  async getDiscoverList(page = 1, size = 10) {
+    const that = this;
+    const res = await api.getHomeDiscoverList({
+      query: {
+        page,
+        size
+      }
+    });
+    if (res.data.code == '0') {
+      this.discoverList = [...this.discoverList, ...res.data.list];
+      console.log('this.discoverList', this.discoverList);
+      this.$apply();
+    } else {
+    }
+  }
+}
+</script>
+
+<style lang="less">
+.swiper-container {
+  width: 100%;
+  height: 100%;
+  .swiper {
+    .slide-image {
+      width: 100%;
+      height: 348rpx;
+    }
+  }
+}
+.activity-btn-area {
+  width: 100%;
+  height: 100%;
+  margin: 0 20rpx;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  .activity-li-btn {
+    width: 110rpx;
+    height: 110rpx;
+    margin: 20rpx 35rpx;
+    font-size: 26rpx;
+    .activity-bg {
+      width: 80rpx;
+      height: 80rpx;
+      margin: 0 auto;
+      display: block;
+    }
+    text {
+      display: block;
+    }
+  }
+}
+</style>

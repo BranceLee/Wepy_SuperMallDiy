@@ -1,0 +1,48 @@
+<template>
+  <view>
+    <!-- <image src="{{list[0].logo}}"></image> -->
+    <view class="discover-list">
+      <block wx:for="{{list}}" wx:key="key">
+        <navigator
+          url="/pages/homeDetail?code={{item.code}}"
+          open-type="navigate"
+          hover-class="none"
+        >
+          <image class="discover-img-item" src="{{item.logo}}" mode="scaleToFill" lazy-load="true">
+          <view wx:for="{{item.attrs}}" wx:key="{{item.attrs.attrName}}" class="dicover-text-dec">
+            <view class="brand-header">{{item.attrName.attrName}}:</view>
+            <view class="brand-content">{{item.attrValList[0].attrVal}}</view>
+          </view>
+        </navigator>
+      </block>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class Discover extends wepy.component {
+  props = {
+    list: []
+  };
+  onLoad() {}
+}
+</script>
+
+<style lang="less" scoped>
+.discover-list {
+  width: 100%;
+  .discover-img-item {
+    width: 100%;
+  }
+  .dicover-text-dec {
+    display: flex;
+    font-size: 30rpx;
+    color: #666;
+    .brand-header,
+    .brand-content {
+      margin: 5rpx 10rpx 10rpx 10rpx;
+    }
+  }
+}
+</style>
