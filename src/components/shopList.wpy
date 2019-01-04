@@ -1,0 +1,40 @@
+<template>
+  <view class="shop-list-container">
+    <block wx:for="{{list}}" wx:key="{{index}}">
+      <view class="shop-list-item">{{item}}</view>
+    </block>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class ShopList extends wepy.component {
+  props = {
+    list: []
+  };
+  onLoad() {
+    // await setTimeout(() => {
+    //   new Promise(re => {
+    //     console.log(this.list, 'list');
+    //   });
+    // }, 1000);
+    setTimeout(() => {
+      console.log(this.list, 'list');
+    }, 1000);
+  }
+}
+</script>
+
+<style lang="less">
+.shop-list-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  .shop-list-item {
+    width: 49%;
+    height: 360rpx;
+  }
+}
+</style>

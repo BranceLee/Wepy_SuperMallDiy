@@ -45,6 +45,7 @@
 import wepy from 'wepy';
 import api from '@/service/api';
 import Discover from '@/components/discover';
+
 export default class Home extends wepy.page {
   config = {
     navigationBarTitle: '商城'
@@ -66,24 +67,22 @@ export default class Home extends wepy.page {
     this.getDiscoverList();
   }
   async getAdList() {
-    const res = await api.getAdList();
-    if (res.data.code == 0) {
-      const { data } = res;
+    const { data } = await api.getAdList();
+    if (data.code == 0) {
       this.adList = data.list;
       this.$apply();
     }
   }
   async getDiscoverList(page = 1, size = 10) {
-    const that = this;
-    const res = await api.getHomeDiscoverList({
+    const { data } = await api.getHomeDiscoverList({
       query: {
         page,
         size
       }
     });
-    if (res.data.code == '0') {
-      this.discoverList = [...this.discoverList, ...res.data.list];
-      console.log('this.discoverList', this.discoverList);
+    if (data.code == '0') {
+      this.discoverList = [...this.discoverList, ...data.list];
+      console.log('this.discoverList', data);
       this.$apply();
     } else {
     }

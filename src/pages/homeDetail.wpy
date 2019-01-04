@@ -1,11 +1,119 @@
 <template>
-  <view>aa</view>
+  <view>
+    <image class="head-logo" src="{{category.logo}}">
+    <view class="brand-introduction-container">
+      <view class="category-head">{{category.name}}</view>
+      <block wx:for="{{category.attrs}}" wx:key="{{index}}">
+        <block wx:for="{{item.attrValList}}" wx:key="{{index}}">
+          <view class="category-text">
+            <view class="attrName-item">
+              <i class="lx">◆</i>
+              {{ item.attrName}}:
+            </view>
+            <view class="attrVal-item">{{item.attrVal}}</view>
+          </view>
+        </block>
+      </block>
+    </view>
+    <view class="filterBar-container">
+      <filterBar @currentType.user="currentType"></filterBar>
+    </view>
+    <view class="shop-list">
+      <shopGridList :list.sync="list"></shopGridList>
+    </view>
+  </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import api from '@/service/api';
+import FilterBar from '@/components/filterBar';
+import ShopGridList from '@/components/shopList';
 export default class HomeDetail extends wepy.page {
   config = {};
-  data = {};
+  components = {
+    filterBar: FilterBar,
+    shopGridList: ShopGridList
+  };
+  data = {
+    brandCode: '021',
+    list: [],
+    skuval: '',
+    category: {},
+    sortCode: 1
+  };
+
+  onLoad(option) {
+    //To Be Changed
+    // this.brandCode = option.code;
+    this.getGoodsList();
+    this.list = [1, 2, 3, 4, 5, 6, 7, 8];
+  }
+
+  methods = {
+    currentType(sortStyle) {
+      switch (sortStyle) {
+        case 'average':
+          this.sortCode = -1;
+          break;
+        case 'byNumber':
+          this.sortCode = 3;
+          break;
+        case 'priceUp':
+          this.sortCode = 1;
+          break;
+        case 'priceDown':
+          this.sortCode = 2;
+          break;
+        //To Be Add 筛选
+        default:
+          break;
+      }
+      this.getGoodsList();
+    }
+  };
+
+  async getGoodsList(currentPage = 1, size = 10) {
+    const { data } = await api.getGoodsList({
+      query: {
+        page: currentPage,
+        size: size,
+        cateCode: this.brandCode,
+        sort: this.sortCode,
+        skuval: this.skuval
+      }
+    });
+    console.log(data);
+    if (data.code == '0') {
+      const { category } = data;
+      this.category = category;
+      this.$apply();
+    }
+  }
 }
 </script>
+
+<style lang="less" scoped>
+.head-logo {
+  width: 100%;
+  height: 370rpx;
+}
+.category-head {
+  margin: 20rpx 0 10rpx 20rpx;
+}
+.category-text {
+  display: flex;
+  font-size: 30rpx;
+
+  .attrName-item {
+    margin-left: 20rpx;
+    .lx {
+      font-size: 20rpx;
+      margin-right: 20rpx;
+    }
+  }
+  .attrVal-item {
+    color: #666;
+  }
+}
+</style>

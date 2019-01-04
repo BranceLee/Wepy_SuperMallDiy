@@ -1,0 +1,115 @@
+<template>
+  <view>
+    <view class="filter-bar-container">
+      <view
+        class="filter-bar-item {{currentFilterStyle==='average' ? 'filter-bar-active' : ''}}"
+        data-current="average"
+        @tap="selectFilter"
+      >综合</view>
+      <view
+        class="filter-bar-item {{currentFilterStyle==='byNumber' ? 'filter-bar-active' : ''}}"
+        data-current="byNumber"
+        @tap="selectFilter"
+      >销量</view>
+      <view
+        class="filter-bar-item {{(currentFilterStyle==='priceUp'||currentFilterStyle==='priceDown') ? 'filter-bar-active' : ''}}"
+      >
+        <view data-current="price" @tap="selectFilter">价格</view>
+        <view class="arrow-box">
+          <view class="arrow-up {{currentFilterStyle==='priceUp' ? 'arrow-up-active' : ''}}"></view>
+          <view class="arrow-down {{currentFilterStyle==='priceDown' ? 'arrow-down-active' : ''}}"></view>
+        </view>
+      </view>
+      <view
+        class="filter-bar-item {{currentFilterStyle==='filterBtn' ? 'filter-bar-active' : ''}}"
+        data-current="filterBtn"
+        @tap="selectFilter"
+      >筛选</view>
+    </view>
+    <filterSlider></filterSlider>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import FilterSlider from '@/components/filterSlider';
+export default class FilterBar extends wepy.component {
+  data = {
+    currentFilterStyle: 'average'
+  };
+  components = {
+    filterSlider: FilterSlider
+  };
+  methods = {
+    selectFilter(e) {
+      const { dataset } = e.target;
+      let currentFilterStyle = '';
+      if (this.currentFilterStyle == dataset.current) {
+        if (dataset.current !== 'price') {
+          return;
+        }
+      }
+      if (dataset.current == 'price') {
+        if (this.currentFilterStyle == 'priceUp') {
+          currentFilterStyle = 'priceDown';
+        } else if (this.currentFilterStyle == 'priceDown') {
+          currentFilterStyle = 'priceUp';
+        } else if (
+          this.currentFilterStyle !== 'priceDown' ||
+          this.currentFilterStyle !== 'priceUp'
+        ) {
+          currentFilterStyle = 'priceUp';
+        }
+      } else {
+        currentFilterStyle = dataset.current;
+      }
+      this.currentFilterStyle = currentFilterStyle;
+      this.$apply();
+    }
+  };
+
+  // 设置监听函数，函数名必须与data中被监听的变量名一致， 筛选方式改变后,激发监听回调
+  watch = {
+    currentFilterStyle(newState) {
+      this.$emit('currentType', newState);
+    }
+  };
+}
+</script>
+
+<style lang="less" >
+.filter-bar-container {
+  width: 100%;
+  font-size: 30rpx;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  .filter-bar-item {
+    margin-top: 10rpx;
+    display: flex;
+    z-index: 100;
+    &.filter-bar-active {
+      color: red;
+    }
+    .arrow-box {
+      margin-left: 10rpx;
+      .arrow-up {
+        border: 10rpx gainsboro solid;
+        border-color: transparent transparent gainsboro transparent;
+        margin-bottom: 8rpx;
+        &.arrow-up-active {
+          border-color: transparent transparent red transparent;
+        }
+      }
+      .arrow-down {
+        border: 10rpx gainsboro solid;
+        border-color: gainsboro transparent transparent transparent;
+        &.arrow-down-active {
+          border-color: red transparent transparent transparent;
+        }
+      }
+    }
+  }
+}
+</style>
